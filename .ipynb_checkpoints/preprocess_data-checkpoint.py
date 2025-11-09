@@ -42,11 +42,8 @@ def _rename_to_canonical(df: pd.DataFrame) -> pd.DataFrame:
 
 def preprocess_wind_data(filepath):
     df = pd.read_csv(filepath)
-    # Only apply renaming if the input dataframe contains columns that match the raw format (e.g., 'Date/Time')
-    # Otherwise, assume it's already in the canonical format.
-    if any(col in df.columns for col in COLUMN_ALIASES["timestamp"][:-1]): # Check for raw timestamp column
-        df.columns = [c.strip() for c in df.columns]
-        df = _rename_to_canonical(df)
+    df.columns = [c.strip() for c in df.columns]
+    df = _rename_to_canonical(df)
 
     required = [
         "timestamp",
@@ -61,18 +58,10 @@ def preprocess_wind_data(filepath):
 
     # Parse timestamp if not already datetime
     if not pd.api.types.is_datetime64_any_dtype(df["timestamp"]):
-        # Try multiple formats, including inferring
-        for fmt in ["%d %m %Y %H:%M", '%Y-%m-%d %H:%M:%S']:
-            ts = pd.to_datetime(df["timestamp"], format=fmt, errors="coerce")
-            if ts.notna().sum() / len(df) > 0.8: # If most values parse successfully
-                break
-        else:
-            # Fallback to inference if specific formats fail
-            ts = pd.to_datetime(df["timestamp"], dayfirst=True, infer_datetime_format=True, errors="coerce")
-
+        ts = pd.to_datetime(df["timestamp"], format="%d %m %Y %H:%M", errors="coerce")
+        # Fallback to inference if too many NaT
         if ts.isna().mean() > 0.5:
-            print("Warning: More than 50% of timestamp values are NaT after conversion. Check input data.")
-
+            ts = pd.to_datetime(df["timestamp"], dayfirst=True, infer_datetime_format=True, errors="coerce")
         df["timestamp"] = ts
 
     # Keep only required columns in order
