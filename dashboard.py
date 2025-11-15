@@ -8,7 +8,7 @@ import os
 # Set page config for wider layout
 st.set_page_config(layout="wide")
 
-st.title("Wind Energy Prediction Dashboard")
+st.title("Wind Energy Forecasting System Dashboard")
 
 # --- Sidebar for Navigation and Upload ---
 st.sidebar.header("Configuration")

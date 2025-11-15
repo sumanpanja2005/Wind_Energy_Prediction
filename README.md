@@ -1,4 +1,4 @@
-# Wind Energy Prediction Project (Week 3)
+# Wind Energy Forecasting System
 
 This project implements a comprehensive solution for wind energy prediction, covering data analysis, feature engineering, machine learning model training (XGBoost and LSTM), and an interactive Streamlit dashboard.
 
